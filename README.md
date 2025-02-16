@@ -1,4 +1,4 @@
-# my_project
+# App Dev Assignment # 1
 
 A new Flutter project.
 
