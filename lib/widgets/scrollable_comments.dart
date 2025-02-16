@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'dart:ui';
 
 class ScrollableComments extends StatelessWidget {
   final List<Map<String, String>> comments = [
@@ -37,15 +38,18 @@ class ScrollableComments extends StatelessWidget {
 
                 const SizedBox(height: 5),
 
-                // Row with Rotated Arrow and Comment
+                // Row with Custom Painted Curved Arrow and Comment
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Transform.rotate(
-                      angle: 3.14 / 2, // Same arrow rotation as before
-                      child: const Icon(Icons.subdirectory_arrow_left, size: 22, color: Colors.grey),
+                    // Custom Drawn Curved Arrow
+                    CustomPaint(
+                      size: const Size(20, 20),
+                      painter: CurvedArrowPainter(),
                     ),
                     const SizedBox(width: 5),
+
+                    // Comment Text
                     Expanded(
                       child: Text(
                         "\"${comment["text"]!}\"",
@@ -75,4 +79,37 @@ class ScrollableComments extends StatelessWidget {
       },
     );
   }
+}
+
+class CurvedArrowPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final Paint paint = Paint()
+      ..color = Colors.grey // Arrow color
+      ..strokeWidth = 3
+      ..style = PaintingStyle.stroke
+      ..strokeCap = StrokeCap.round;
+
+    final Path path = Path();
+
+    // Start from bottom (curved part)
+    path.moveTo(size.width * 0.8, size.height);
+    path.quadraticBezierTo(
+      size.width * 0.2, size.height, // Control point for the curve
+      size.width * 0.2, size.height * 0.5, // Mid-point before going up
+    );
+
+    // Vertical upward line
+    path.lineTo(size.width * 0.2, size.height * 0.1);
+
+    // Arrowhead (two short lines forming a tip)
+    path.moveTo(size.width * 0.1, size.height * 0.2);
+    path.lineTo(size.width * 0.2, size.height * 0.1);
+    path.lineTo(size.width * 0.3, size.height * 0.2);
+
+    canvas.drawPath(path, paint);
+  }
+
+  @override
+  bool shouldRepaint(CustomPainter oldDelegate) => false;
 }
